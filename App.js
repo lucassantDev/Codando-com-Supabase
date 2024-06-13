@@ -7,6 +7,19 @@ export default function App() {
   const [descricaoDigitada, setDescricaoDigitada] = useState("");
   const [valorDigitado, setValorDigitado] = useState("");
   const [dados, setDados] = useState([]);
+  // função para deletar dados no Banco de Dados
+  const deletarConta = async(id) => {
+      const {error} = await supabase.from('tb_contas').delete().match({id})
+
+      if(error){
+          alert('Falha ao deletar!')
+      }else{
+        alert('Conta deletada com sucesso!')
+        consultarDados()
+      }
+  }
+
+
   // função para consultar os dados no Banco de Dados
   const consultarDados  = async() =>{
     const{data, error} = await supabase.from('tb_contas').select('*')
@@ -17,9 +30,8 @@ export default function App() {
         setDados(data);
 
     }
-
-
   }
+
 
   // Criar uma função para inserir no Banco de dados
   const cadastrarConta = async(desc, vl)=>{
@@ -68,9 +80,14 @@ export default function App() {
         
           {dados.map((item)=>(
             <View style={styles.caixaContas}>
+            <Text>Nº {item.id}</Text>
             <Text>{item.coluna_descricao}</Text>
             <Text>R$ {item.coluna_valor}</Text>
-            <Text>{item.coluna_status}</Text>
+            <Button
+              title='Excluir'
+              onPress={()=>{deletarConta(item.id)}}
+
+            />
           </View> 
           ))}
       </ScrollView>
